@@ -1,0 +1,29 @@
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Cache and temporary files
+.cache/
+.tmp/
+tmp/
+temp/
+
+# Terraform and Terragrunt
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+.terragrunt-cache/
