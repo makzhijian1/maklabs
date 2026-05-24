@@ -1,0 +1,47 @@
+name: directus-target
+
+services:
+  directus_target:
+    image: directus/directus:latest
+    container_name: directus-target
+    ports:
+      - "8056:8055"
+    environment:
+      KEY: directus-target-key
+      SECRET: directus-target-secret
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: password
+      DB_CLIENT: pg
+      DB_HOST: postgres_target
+      DB_PORT: 5432
+      DB_DATABASE: directus_target
+      DB_USER: directus_target
+      DB_PASSWORD: password
+    volumes:
+      - directus_target_uploads:/directus/uploads
+      - directus_target_extensions:/directus/extensions
+    depends_on:
+      postgres_target:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres_target:
+    image: postgres:16-alpine
+    container_name: directus-target-postgres
+    environment:
+      POSTGRES_DB: directus_target
+      POSTGRES_USER: directus_target
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_target_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U directus_target -d directus_target"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  directus_target_uploads:
+  directus_target_extensions:
+  postgres_target_data:

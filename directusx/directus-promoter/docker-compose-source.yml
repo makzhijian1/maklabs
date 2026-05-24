@@ -1,0 +1,47 @@
+name: directus-source
+
+services:
+  directus_source:
+    image: directus/directus:latest
+    container_name: directus-source
+    ports:
+      - "8055:8055"
+    environment:
+      KEY: directus-source-key
+      SECRET: directus-source-secret
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: password
+      DB_CLIENT: pg
+      DB_HOST: postgres_source
+      DB_PORT: 5432
+      DB_DATABASE: directus_source
+      DB_USER: directus_source
+      DB_PASSWORD: password
+    volumes:
+      - directus_source_uploads:/directus/uploads
+      - directus_source_extensions:/directus/extensions
+    depends_on:
+      postgres_source:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres_source:
+    image: postgres:16-alpine
+    container_name: directus-source-postgres
+    environment:
+      POSTGRES_DB: directus_source
+      POSTGRES_USER: directus_source
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_source_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U directus_source -d directus_source"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  directus_source_uploads:
+  directus_source_extensions:
+  postgres_source_data:
